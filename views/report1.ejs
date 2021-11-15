@@ -1,0 +1,100 @@
+<%- include('partials/header.ejs') %>
+<div class="row">
+  <div class="col-md-6">
+    <form class="" action="/search/report1" method="post">
+      <div class="form-group">
+        <label class="label-control">From</label>
+        <% if (typeof (params.date) != 'undefined'){ %>
+        <input name='date' type="text" class="form-control datepicker" value="<%= params.date.getUTCMonth()+1%>/<%= params.date.getUTCDate() + 1 %>/<%= params.date.getUTCFullYear() %>">
+        <% } %>
+      </div>
+  </div>
+  <div class="col-md-6">
+    <div class="form-group">
+      <label class="label-control">To</label>
+      <% if (typeof (params.enddate) != 'undefined'){ %>
+      <input name='enddate' type="text" class="form-control datepicker" value="<%= params.enddate.getUTCMonth()+1%>/<%= params.enddate.getUTCDate() + 1 %>/<%= params.enddate.getUTCFullYear() %>">
+      <% } %>
+    </div>
+    <input type="submit" name="submit" value="Search">
+    </form>
+  </div>
+</div>
+<input type="button" value="Print Table" onclick="myApp.printTable()" />
+
+<div class="table-responsive">
+  <table class="table table-striped" id='report1'>
+    <thead>
+      <tr>
+        <th class="text-center"></th>
+        <th>Name</th>
+        <th>Date</th>
+        <th>NSE Quantity Traded</th>
+        <th>NSE Deliverable Quantity</th>
+        <th>NSE Delivery Percent</th>
+        <th>NSE Close</th>
+        <th>BSE Delivery Quantity</th>
+        <th>BSE Day Volume</th>
+        <th>BSE Delivery Percent</th>
+        <th>NSE Close Difference</th>
+        <th>NSE Percent Difference</th>
+        <th>BSE Percent Difference</th>
+        <th>NSE Delivery Difference</th>
+        <th>BSE Delivery Difference</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% data.forEach((script, i)=>{ %>
+      <tr>
+        <td class="text-center"><%= i + 1 %></td>
+        <td><%= script.name_of_security %></td>
+        <td><%= script.nse_date.getUTCMonth()+1%>/<%= script.nse_date.getUTCDate() + 1 %>/<%= script.nse_date.getUTCFullYear() %></td>
+        <td><%= script.nse_quantity_traded %></td>
+        <td class="text-right"><%= script.nse_deliverable_quantity %></td>
+        <td class="text-right"><%= script.nse_percentage_of_deliverable_quantity_to_traded_quantity %></td>
+        <td class="text-center"><%= script.nse_close %></td>
+        <td><%= script.bse_delivery_quantity %></td>
+        <td><%= script.bse_day_volume %></td>
+        <td><%= script.bse_delv_per %></td>
+        <% if (script.closeavgdiff < 0){ %>
+        <td class="text-danger"><%= Math.abs(script.closeavgdiff) %></td>
+        <% } else { %>
+        <td class="text-success"><%= Math.abs(script.closeavgdiff) %></td>
+        <% } %>
+        <% if (script.nseperavgdiff < 0){ %>
+        <td class="text-danger"><%= Math.abs(script.nseperavgdiff) %></td>
+        <% } else { %>
+        <td class="text-success"><%= Math.abs(script.nseperavgdiff) %></td>
+        <% } %>
+        <% if (script.bseperavgdiff < 0){ %>
+        <td class="text-danger"><%= Math.abs(script.bseperavgdiff) %></td>
+        <% } else { %>
+        <td class="text-success"><%= Math.abs(script.bseperavgdiff) %></td>
+        <% } %>
+        <% if (script.nsedelvavgdiff < 0){ %>
+        <td class="text-danger"><%= Math.abs(script.nsedelvavgdiff) %></td>
+        <% } else { %>
+        <td class="text-success"><%= Math.abs(script.nsedelvavgdiff) %></td>
+        <% } %>
+        <% if (script.bsedelvavgdiff < 0){ %>
+        <td class="text-danger"><%= Math.abs(script.bsedelvavgdiff) %></td>
+        <% } else { %>
+        <td class="text-success"><%= Math.abs(script.bsedelvavgdiff) %></td>
+        <% } %>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<script>
+  var myApp = new function() {
+    this.printTable = function() {
+      var tab = document.getElementById('report1');
+      var win = window.open('', '', 'height=700,width=700');
+      win.document.write(tab.outerHTML);
+      win.document.close();
+      win.print();
+    }
+  }
+</script>
+<%- include('partials/footer.ejs') %>

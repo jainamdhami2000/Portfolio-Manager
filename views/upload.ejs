@@ -1,0 +1,124 @@
+<%- include('partials/header.ejs') %>
+
+<body>
+  <div class="container">
+    <div class=" nav justify-content-center" style="margin-top:100px;">
+      <div class="card border-warning mb-3 " style="max-width: 20rem;">
+        <div class="card-header">
+          <h5>Upload new file(DAT)</h5>
+        </div>
+        <div class="card-body">
+          <form action="/upload/nse" method="post" enctype="multipart/form-data">
+            <input type="file" name="nse"><br><br>
+            <input type="file" name="close"><br><br>
+            <div class="text-center">
+              <button type="submit" class="btn btn-lg btn-primary">submit</button>
+            </div>
+          </form>
+        </div>
+        <div class="card-body">
+          <form action="/upload/bse" method="post" enctype="multipart/form-data">
+            <input type="file" name="bse"><br><br>
+            <div class="text-center">
+              <button type="submit" class="btn btn-lg btn-primary">submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <form action="/upload/addscript" method="post">
+      <div class="col-lg-5 col-md-6 col-sm-3">
+        <select name='scripts' id='category' class="selectpicker form-control" data-style="select-with-transition" multiple title="Choose Skill" data-size="7">
+          <option disabled> Choose skill</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-lg btn-primary">submit</button>
+    </form>
+    <br>
+    <% if(nsedata){ %>
+    <div class="table-responsive">
+      <table class="table table-hover table-responsive table-stripped justify-content-center" style="width: auto">
+        <thead>
+          <tr>
+            <th>Record Type</th>
+            <th>Name of Security</th>
+            <th>Settlement Type</th>
+            <th>Quantity Tr aded</th>
+            <th>Deliverable Quantity</th>
+            <th>Percentage Delivery</th>
+          </tr>
+        </thead>
+        <tbody style="overflow-x: scroll; height:350px;" class="table-bordered">
+          <% for(var i = 0;i < nsedata.length;i++){ %>
+          <tr class="text-center">
+            <!-- <td><%= i + 1 %></td> -->
+            <td style="padding-left: 1em"><%= nsedata[i].record_type %></td>
+            <td style="padding-left: 1em"><%= nsedata[i].name_of_security %></td>
+            <td style="padding-left: 1em"><%= nsedata[i].settlement_type %></td>
+            <td style="padding-left: 1.2em"><%= nsedata[i].quantity_traded %></td>
+            <td style="padding-left: 1.2em"><%= nsedata[i].deliverable_quantity %></td>
+            <td style="padding-left: 1.2em"><%= nsedata[i].percentage_of_deliverable_quantity_to_traded_quantity %></td>
+          </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+    <% } %>
+    <br>
+    <% if(bsedata){ %>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr class="bg-primary">
+            <th>record_type</th>
+            <th>name_of_security</th>
+            <th>settlement_type</th>
+            <th>quantity_traded</th>
+            <th>deliverable_quantity</th>
+            <th>percentage_of_deliverable_quantity_to_traded_quantity</th>
+          </tr>
+        </thead>
+        <tbody style="overflow-x: scroll; height:350px;" class="table-bordered">
+          <% for(var i = 0;i < bsedata.length;i++){ %>
+          <tr class="text-center">
+            <!-- <td><%= i + 1 %></td> -->
+            <td style="padding-left: 1em"><%= bsedata[i].record_type %></td>
+            <td style="padding-left: 1em"><%= bsedata[i].name_of_security %></td>
+            <td style="padding-left: 1em"><%= bsedata[i].settlement_type %></td>
+            <td style="padding-left: 1.2em"><%= bsedata[i].quantity_traded %></td>
+            <td style="padding-left: 1.2em"><%= bsedata[i].deliverable_quantity %></td>
+            <td style="padding-left:1.2em"><%= bsedata[i].percentage_of_deliverable_quantity_to_traded_quantity %></td>
+          </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+    <% } %>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+    var scriptarray = []
+  </script>
+  <% user.scripts.forEach(script=>{%>
+    <script>
+    scriptarray.push('<%=script%>')
+    </script>
+  <%})%>
+  <script>
+    const URL = "/upload/getscripts"
+    var resArray = []
+    $.ajax({
+      url: URL,
+      method: "GET"
+    }).done(function(data) {
+      data.forEach((item) => {
+        if (scriptarray.includes(item.company_name)){
+          $('#category').append('<option value="' + item.company_name + '" selected>' + item.company_name + '</option>');
+        } else {
+          $('#category').append('<option value="' + item.company_name + '">' + item.company_name + '</option>');
+        }
+      });
+    });
+  </script>
+</body>
+<%- include('partials/footer.ejs') %>
